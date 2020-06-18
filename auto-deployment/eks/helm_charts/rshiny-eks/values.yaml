@@ -1,0 +1,97 @@
+# Default values for rshiny-eks.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: rocker/shiny
+  containerPort: 3838
+  # add in a TAG key
+  # don't use latest!
+  tag: 3.6.1
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+env:
+  - name: POLISHED_API_KEY
+    valueFrom:
+      secretKeyRef:
+        name: polished
+        key: api_key
+  - name: POLISHED_APP_NAME
+    valueFrom:
+      secretKeyRef:
+        name: polished
+        key: app_name
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name:
+
+
+podSecurityContext: {}
+# fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+# runAsNonRoot: true
+# runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/affinity: cookie
+  #     if you need to have https uncomment
+  #    cert-manager.io/cluster-issuer: letsencrypt-production
+  hosts:
+    # your real domain
+    # this may take some time to propogate the first time around due to DNS settings.
+    # Don't freak out!
+    - host: www.mydomain.com
+      paths:
+        - "/"
+    # Get the service url
+    # with kubectl get svc -o wide | grep MY_RELEASE_NAME
+    - host: lots-o-numbas.aws-region.elb.amazonaws.com
+      paths:
+        - "/"
+  tls: []
+  # If you're using https you'll need to update this
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+#   cpu: 100m
+#   memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

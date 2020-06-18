@@ -1,0 +1,7 @@
+.aws
+.ssh
+**/kubeconfig*
+**/terraform.tfstate*
+**/.terraform
+Post.md
+blog-post-images
