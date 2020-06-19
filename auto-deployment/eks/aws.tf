@@ -9,13 +9,18 @@ provider "aws" {
 }
 
 # Make sure this matches the name and region you defined in your terraform state
-# To get the name look at ../terraform-state/main.tf
-//terraform {
-//  backend "s3" {
-//    bucket = "rshiny-aws-terraform-state"
-//    key = "terraform/terraform-dev.tfstate"
-//    region = "us-east-1"
-//    encrypt = true
-//    dynamodb_table = "rshiny-aws-terraform-state-lock"
-//  }
-//}
+# cd ../terraform-state
+# terraform output
+# then get the value of terraform-state
+terraform {
+  backend "s3" {
+    # Update this
+    bucket = "UPDATE_THIS"
+    key = "terraform/terraform-dev.tfstate"
+    # Use the same region you used in auto-deplment/terraform-state/main.tf
+    region = "us-east-1"
+    encrypt = true
+    # Update this
+    dynamodb_table = "UPDATE_THIS-terraform-state-lock"
+  }
+}

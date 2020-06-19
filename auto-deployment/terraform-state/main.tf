@@ -2,9 +2,23 @@
 # Change the rshiny to something that makes sense
 # And the AWS_REGION to the region you want to deploy in
 
-variable "prefix" {
-  type = string
-  default = "rshiny-aws"
+
+## S3 bucket names must be globally unique!
+## So we are importing a random string generator
+## You could also just make your bucket name something unique
+
+provider "random" {
+  version = "~> 2.1"
+}
+
+resource "random_string" "suffix" {
+  length = 8
+  special = false
+  upper = false
+}
+
+locals {
+  prefix = "rshiny-aws-${random_string.suffix.result}"
 }
 
 # You can also just grab the current region
@@ -21,7 +35,7 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "terraform-state" {
-  bucket = "${var.prefix}-terraform-state"
+  bucket = "${local.prefix}-terraform-state"
   acl = "private"
   region = var.region
 
@@ -35,7 +49,7 @@ resource "aws_s3_bucket" "terraform-state" {
 }
 
 resource "aws_dynamodb_table" "terraform-state-lock" {
-  name = "${var.prefix}-terraform-state-lock"
+  name = "${local.prefix}-terraform-state-lock"
   read_capacity  = 1
   write_capacity = 1
   hash_key = "LockID"
@@ -44,4 +58,9 @@ resource "aws_dynamodb_table" "terraform-state-lock" {
     name = "LockID"
     type = "S"
   }
+}
+
+output "terraform-state" {
+  description = "Terraform state ID"
+  value = local.prefix
 }
