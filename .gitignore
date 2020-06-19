@@ -5,3 +5,9 @@
 **/.terraform
 Post.md
 blog-post-images
+**/.Ulysses-Group.plist
+**/.Ulysses-Settings.plist
+**/.terraform.tfstate.lock.info
+auto-deployment/eks/helm_charts/rshiny-eks/Chart.lock
+auto-deployment/eks/helm_charts/rshiny-eks/charts/
+

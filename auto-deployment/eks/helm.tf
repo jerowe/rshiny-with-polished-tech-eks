@@ -28,7 +28,6 @@ resource "null_resource" "project_upgrade" {
     helm upgrade --install rshiny helm_charts/rshiny-eks  \
         --set image.repository="jerowe/polished-tech" \
         --set image.tag=latest \
-        --set service.type=LoadBalancer \
         --wait
     EOF
   }
@@ -52,7 +51,6 @@ resource "null_resource" "project_expose_ip" {
     helm upgrade --install rshiny helm_charts/rshiny-eks  \
         --set image.repository="jerowe/polished-tech" \
         --set image.tag=latest \
-        --set service.type=LoadBalancer \
         --set ingress.hosts[0].host=$EXPOSED_URL \
         --set ingress.hosts[0].paths[0]="/" \
         --wait
@@ -72,7 +70,6 @@ output "helm-install-command" {
         --set image.tag=latest \
         --set ingress.hosts[0].host=$EXPOSED_URL \
         --set ingress.hosts[0].paths="/" \
-        --set service.type=LoadBalancer \
         --wait
     EOF
 }
