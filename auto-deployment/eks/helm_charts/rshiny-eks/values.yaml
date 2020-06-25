@@ -27,6 +27,21 @@ env:
       secretKeyRef:
         name: polished
         key: app_name
+  - name: POLISHED_FIREBASE_API_KEY
+    valueFrom:
+      secretKeyRef:
+        name: polished
+        key: firebase_api_key
+  - name: POLISHED_FIREBASE_AUTH_DOMAIN
+    valueFrom:
+      secretKeyRef:
+        name: polished
+        key: firebase_auth_domain
+  - name: POLISHED_FIREBASE_PROJECT_ID
+    valueFrom:
+      secretKeyRef:
+        name: polished
+        key: firebase_project_id
 
 serviceAccount:
   # Specifies whether a service account should be created

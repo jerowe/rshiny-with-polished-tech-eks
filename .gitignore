@@ -1,5 +1,6 @@
 .aws
 .ssh
+variables.tf
 **/kubeconfig*
 **/terraform.tfstate*
 **/.terraform

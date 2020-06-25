@@ -27,7 +27,7 @@ resource "null_resource" "project_upgrade" {
     command = <<EOF
     helm upgrade --install rshiny helm_charts/rshiny-eks  \
         --set image.repository="jerowe/polished-tech" \
-        --set image.tag=latest \
+        --set image.tag="1.0" \
         --wait
     EOF
   }
@@ -50,7 +50,7 @@ resource "null_resource" "project_expose_ip" {
     export EXPOSED_URL=$(kubectl get svc --namespace default rshiny-nginx-ingress-controller -o json | jq -r '.status.loadBalancer.ingress[]?.hostname')
     helm upgrade --install rshiny helm_charts/rshiny-eks  \
         --set image.repository="jerowe/polished-tech" \
-        --set image.tag=latest \
+        --set image.tag="1.0" \
         --set ingress.hosts[0].host=$EXPOSED_URL \
         --set ingress.hosts[0].paths[0]="/" \
         --wait
@@ -67,7 +67,7 @@ output "helm-install-command" {
     export EXPOSED_URL=$(kubectl get svc --namespace default rshiny-nginx-ingress-controller -o json | jq -r '.status.loadBalancer.ingress[]?.hostname')
     helm upgrade --install rshiny helm_charts/rshiny-eks  \
         --set image.repository="jerowe/polished-tech" \
-        --set image.tag=latest \
+        --set image.tag="1.0" \
         --set ingress.hosts[0].host=$EXPOSED_URL \
         --set ingress.hosts[0].paths="/" \
         --wait

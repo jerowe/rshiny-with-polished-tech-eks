@@ -91,6 +91,28 @@ resource "aws_security_group" "worker_group_mgmt_two" {
       "192.168.0.0/16",
     ]
   }
+  egress {
+    from_port = 0
+    to_port = 0
+    protocol = "-1"
+    cidr_blocks = [
+      "0.0.0.0/0"]
+  }
+}
+
+resource "aws_security_group" "worker_group_mgmt_firebase" {
+  name_prefix = "worker_group_mgmt_firebase"
+  vpc_id = module.vpc.vpc_id
+
+  ingress {
+    from_port = 5228
+    to_port = 5230
+    protocol = "tcp"
+
+    cidr_blocks = [
+      "192.168.0.0/16",
+    ]
+  }
 }
 
 resource "aws_security_group" "all_worker_mgmt" {
@@ -108,16 +130,18 @@ resource "aws_security_group" "all_worker_mgmt" {
       "192.168.0.0/16",
     ]
   }
+
 }
 
 ########################################################################
 # VPC
 # Our kubernetes cluster will sit in its own VPC
+# https://registry.terraform.io/modules/terraform-aws-modules/vpc/aws/2.21.0
 ########################################################################
-
 module "vpc" {
   source = "terraform-aws-modules/vpc/aws"
-  version = "2.6.0"
+  #version = "2.6.0"
+  version = "2.21.0"
 
   name = local.cluster_name
   cidr = "10.0.0.0/16"
@@ -147,11 +171,13 @@ module "vpc" {
 
 ########################################################################
 # EKS Cluster!
+# https://registry.terraform.io/modules/terraform-aws-modules/eks/aws/12.1.0
 ########################################################################
 
 module "eks" {
   source = "terraform-aws-modules/eks/aws"
-  version = "8.1.0"
+  //  version = "8.1.0"
+  version = "12.1.0"
   cluster_name = local.cluster_name
   cluster_version = "1.16"
   subnets = module.vpc.private_subnets
@@ -169,7 +195,9 @@ module "eks" {
       name = "worker-group-2"
       instance_type = "t2.medium"
       additional_security_group_ids = [
-        aws_security_group.worker_group_mgmt_two.id]
+        aws_security_group.worker_group_mgmt_two.id,
+        aws_security_group.worker_group_mgmt_firebase.id
+      ]
       asg_desired_capacity = 1
     },
   ]
@@ -202,17 +230,35 @@ resource "null_resource" "kubectl_update" {
 ########################################################################
 
 locals {
-  secrets = [{ name = "polished"
+  secrets = [
+    {
+      name = "polished"
       data = {
         app_name = var.POLISHED_APP_NAME
         api_key = var.POLISHED_API_KEY
-      }},]
+        firebase_api_key = var.POLISHED_FIREBASE_API_KEY
+        firebase_project_id = var.POLISHED_FIREBASE_PROJECT_ID
+        firebase_auth_domain = var.POLISHED_FIREBASE_AUTH_DOMAIN
+      }
+    },]
 }
+
+// If you forgot to add your API keys to variables.tf before the initial run
+// And you have trouble getting these to update
+// Remove the state
+// terraform state rm kubernetes_secret.main
+// kubectl delete secret polished
+// Remove the app
+// helm delete rshiny
+// Then rerun terraform
+// terraform init; terraform refresh; terraform apply -auto-approve
+// This WILL change the load balancer URL, so make sure to grab it
 
 resource "kubernetes_secret" "main" {
   depends_on = [
     module.eks,
   ]
+
   count = length(local.secrets)
 
   metadata {

@@ -15,12 +15,12 @@ provider "aws" {
 terraform {
   backend "s3" {
     # Update this
-    bucket = "UPDATE_THIS"
+    bucket = "rshiny-aws-lzesfeew-terraform-state"
     key = "terraform/terraform-dev.tfstate"
     # Use the same region you used in auto-deplment/terraform-state/main.tf
     region = "us-east-1"
     encrypt = true
     # Update this
-    dynamodb_table = "UPDATE_THIS-terraform-state-lock"
+    dynamodb_table = "rshiny-aws-lzesfeew-terraform-state-lock"
   }
 }
