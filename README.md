@@ -1,10 +1,10 @@
 # README
 
-This is a github repo to deploy a Kubernetes cluster on AWS (EKS) with terraform, and to add an RShiny app with [Polished Authentication](https://polished.tech/docs/get-started).
+This is a github repo to deploy a Kubernetes cluster on AWS (EKS) with terraform, and to add an RShiny app with [Polished Authentication](https://polished.tech/docs/01-get-started).
 
 ## Polished Authentication
 
-Go through the [quickstart guide](https://polished.tech/docs/get-started) to sign up and grab your secret and app name.
+Go through the [quickstart guide](https://polished.tech/docs/01-get-started) to sign up and grab your secret and app name.
 
 ## Deploy the Kubernetes Cluster
 
